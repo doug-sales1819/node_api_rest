@@ -1,0 +1,45 @@
+version: '3.8'
+
+networks:
+  api-network:
+    driver: bridge
+
+services:
+  postgres-db:
+    image: postgres:latest
+    volumes:
+      - pgdata:/var/lib/postgres/data
+    hostname: localhost
+    env_file:
+      - ./.env
+    ports:
+      - "8001:5432"
+    restart: always
+    networks:
+      - api-network
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres-db
+    networks:
+      - api-network
+  
+  app:
+    volumes:
+      - ./:/usr/src/app
+    build: 
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    depends_on:
+      - postgres-db
+    networks:
+      - api-network
