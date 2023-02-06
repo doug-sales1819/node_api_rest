@@ -5,15 +5,15 @@ networks:
     driver: bridge
 
 services:
-  postgres-db:
-    image: postgres:latest
+  postgres:
+    image: postgres:15.1
     volumes:
-      - pgdata:/var/lib/postgres/data
+      - pgdata:/var/lib/postgressql/data
     hostname: localhost
     env_file:
       - ./.env
     ports:
-      - "8001:5432"
+      - "5432:5432"
     restart: always
     networks:
       - api-network
@@ -24,7 +24,7 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - postgres-db
+      - postgres
     networks:
       - api-network
   
@@ -40,6 +40,9 @@ services:
       - NODE_ENV=development
       - PORT=3000
     depends_on:
-      - postgres-db
+      - postgres
     networks:
       - api-network
+
+volumes:
+    pgdata:

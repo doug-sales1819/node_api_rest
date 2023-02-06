@@ -1,0 +1,14 @@
+{
+    "verbose": true,
+    "restartable": "rs",
+    "ignore": [".git", "*.test.js", "node_modules/"],
+    "execMap": {
+      "rb": "ruby",
+      "pde": "processing --sketch={{pwd}} --run",
+      "js": "node -r sucrase/register"
+    },
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "ext": "js"
+  }
