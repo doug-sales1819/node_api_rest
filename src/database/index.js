@@ -2,10 +2,6 @@ import { Sequelize } from 'sequelize';
 
 import databaseConfig from '../config/database';
 
+const connection = new Sequelize(databaseConfig.development);
 
-const database =  new Sequelize(databaseConfig.development);
-
-
-console.log(database);
-
-
+export default connection;
