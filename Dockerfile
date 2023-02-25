@@ -1,20 +1,14 @@
-FROM node:18.13-slim as BUILDER
-LABEL maintainer="Douglas Sales"
+FROM node:18.13
 
-WORKDIR /usr/src/app
+LABEL maintainer="Douglas Sales <douglas.sales1819@gmail.com>"
 
-COPY package*.json  ./
+WORKDIR /app
+
+COPY ./src /app/src/
+COPY ./*.json /app/
+COPY ./.env /app/
+
 RUN npm install
-
-COPY src ./src
-
-FROM node:18.3.0-alpine 
-
-ARG NODE_ENV
-
-WORKDIR /usr/src/app
-
-COPY --from=BUILDER /usr/src/app/ ./
 
 EXPOSE 3000
 

@@ -1,22 +1,22 @@
-version: '3.8'
-
-networks:
-  api-network:
-    driver: bridge
+version: '3'
 
 services:
-  postgres:
+  school-db:
     image: postgres:15.1
+    container_name: school-db
+    hostname: school-db
     volumes:
-      - pgdata:/var/lib/postgressql/data
-    hostname: localhost
+      - pgdata:/var/lib/postgresql/data
     env_file:
       - ./.env
     ports:
       - "5432:5432"
     restart: always
-    networks:
-      - api-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   
   adminer:
     image: adminer
@@ -24,25 +24,31 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - postgres
-    networks:
-      - api-network
+      - school-db
   
-  app:
+  school-api:
+    image: node:16.14
     volumes:
-      - ./:/usr/src/app
+      - ./src:/app/src
+      - school-api-data:/app/data
+    container_name: school-api
     build: 
       dockerfile: Dockerfile
       context: .
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-      - PORT=3000
+        NODE_ENV: development
+        PORT: 3000
+        WAIT_HOSTS: school-db:5432
     depends_on:
-      - postgres
-    networks:
-      - api-network
+      - school-db
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:3000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-    pgdata:
+  pgdata:
+  school-api-data:
